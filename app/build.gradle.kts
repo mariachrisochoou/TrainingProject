@@ -37,6 +37,13 @@ android {
     buildFeatures {
         compose = true
     }
+
+    packagingOptions {
+        resources {
+            exclude("META-INF/INDEX.LIST")
+            exclude("META-INF/*")
+        }
+    }
 }
 
 dependencies {
@@ -53,6 +60,12 @@ dependencies {
     implementation(libs.androidx.navigation.runtime.ktx)
     implementation(libs.androidx.foundation.layout.android)
     implementation(libs.androidx.navigation.compose)
+    implementation(libs.firebase.appdistribution.gradle)
+    implementation(libs.retrofit)
+    implementation(libs.retrofit.gson.converter)
+    implementation(libs.androidx.tracing.perfetto.handshake)
+    implementation(libs.androidx.runtime.livedata)
+    implementation(libs.androidx.espresso.core)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

@@ -1,19 +1,46 @@
 package com.magazinestore.app.ui.screens
 
 import android.annotation.SuppressLint
-import android.app.AlertDialog
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Warning
-import androidx.compose.material3.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuDefaults.outlinedTextFieldColors
-import androidx.compose.runtime.*
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -21,26 +48,52 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.magazinestore.app.R
-import com.magazinestore.app.ui.theme.AppTheme
-
+import com.magazinestore.app.viewmodel.LoginViewModel
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun LoginPage(
-    onLoginClicked: (String, String) -> Unit
+    loginViewModel: LoginViewModel,
+    onLoginSuccess: (String) -> Unit
 ) {
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var isLoading by remember { mutableStateOf(false) }
-    var showDialog by remember { mutableStateOf(false)}
+    var showDialog1 by remember { mutableStateOf(false)}
+    var showDialog2 by remember { mutableStateOf(false)}
+    var showPassword by remember { mutableStateOf(false) }
+    var errorDialog by remember { mutableStateOf(false)}
+
+
+    val token by loginViewModel.token.observeAsState()
+    val errorMessage by loginViewModel.errorMessage.observeAsState()
+    val usernameError by loginViewModel.usernameError.observeAsState()
+    val passwordError by loginViewModel.passwordError.observeAsState()
+
+    println(token)
+
+    LaunchedEffect(token) {
+        if (token != null) {
+            isLoading = false
+            onLoginSuccess(token!!)
+        }
+    }
+
+    LaunchedEffect(errorMessage) {
+        if (errorMessage != null) {
+            isLoading = false
+            errorDialog = true
+        }
+    }
     Scaffold(
         topBar = {
             TopAppBar(
@@ -76,26 +129,28 @@ fun LoginPage(
                     text = stringResource(R.string.username),
                     style = MaterialTheme.typography.bodyLarge
                 )
-                Icon(
-                    Icons.Default.Info,
-                    contentDescription = "Info",
-                    tint = MaterialTheme.colorScheme.primary
-                )
+                IconButton(onClick = {
+                    showDialog1 = true
+                }) {
+                    Icon(
+                        Icons.Default.Info,
+                        contentDescription = "Info",
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+                }
             }
 
             OutlinedTextField(
                 value = username,
                 onValueChange = { username = it },
+                isError = usernameError != null,
                 trailingIcon = {Icon(Icons.Filled.Warning, contentDescription = "Warning", tint = MaterialTheme.colorScheme.background)},
-                label = { Text(
-                    text = stringResource(R.string.username),
-                    style = MaterialTheme.typography.bodyLarge) },
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
                 colors = outlinedTextFieldColors(
-                    focusedBorderColor = MaterialTheme.colorScheme.primary,
-                    unfocusedBorderColor = Color.Transparent,
-                    errorLeadingIconColor = MaterialTheme.colorScheme.error
+                    errorLeadingIconColor = MaterialTheme.colorScheme.error,
+                    focusedBorderColor = if (usernameError != null) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary,
+                    unfocusedBorderColor = if (usernameError != null) MaterialTheme.colorScheme.error  else Color.Gray
                 )
 
             )
@@ -112,7 +167,7 @@ fun LoginPage(
                     style = MaterialTheme.typography.bodyLarge
                 )
                 IconButton(onClick = {
-                    showDialog = true // Show the dialog when the icon is clicked
+                    showDialog2 = true
                 }) {
                     Icon(
                         Icons.Default.Info,
@@ -125,18 +180,48 @@ fun LoginPage(
             OutlinedTextField(
                 value = password,
                 onValueChange = { password = it },
-                visualTransformation = PasswordVisualTransformation(),
+                visualTransformation = if (showPassword) VisualTransformation.None else PasswordVisualTransformation(),
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
+                isError = passwordError != null,
+                trailingIcon = {
+                    Column(
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        val text = if (showPassword) "Hide" else "Show"
+                        Text(
+                            text = text,
+                            modifier = Modifier
+                                .clickable { showPassword = !showPassword }
+                                .padding(4.dp),
+                            style = MaterialTheme.typography.bodyMedium.copy(
+                                color = MaterialTheme.colorScheme.primary,
+                                textDecoration = TextDecoration.Underline
+                            )
+                        )
+                        if (passwordError != null) {
+                            Icon(
+                                Icons.Filled.MoreVert,
+                                contentDescription = "Error",
+                                tint = MaterialTheme.colorScheme.error
+                            )
+                        }
+
+                    }
+                },
                 keyboardOptions = KeyboardOptions.Default.copy(
                     imeAction = ImeAction.Done
                 ),
                 keyboardActions = KeyboardActions(
-                    onDone = { onLoginClicked(username, password) }
+                    onDone = {
+                        isLoading = true
+                        loginViewModel.login(username, password)
+                    }
                 ),
                 colors = outlinedTextFieldColors(
-                    focusedBorderColor = MaterialTheme.colorScheme.primary,
-                    unfocusedBorderColor = Color.Transparent,
+                    focusedBorderColor = if (passwordError != null) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary,
+                    unfocusedBorderColor = if (passwordError != null) MaterialTheme.colorScheme.error else Color.Gray,
                     errorLeadingIconColor = MaterialTheme.colorScheme.error
                 )
             )
@@ -147,7 +232,7 @@ fun LoginPage(
             Button(
                 onClick = {
                     isLoading = true
-                    onLoginClicked(username, password)
+                    loginViewModel.login(username, password)
                 },
                 modifier = Modifier.fillMaxWidth().border(2.dp, MaterialTheme.colorScheme.primary),
                 shape = RoundedCornerShape(16.dp),
@@ -171,8 +256,20 @@ fun LoginPage(
                 }
             }
 
-            if (showDialog) {
-                InfoDialog(onDismiss = { showDialog = false })
+            if (showDialog1) {
+                InfoDialog(type = stringResource(R.string.password_details2), onDismiss = { showDialog1 = false })
+            }
+
+            if (showDialog2) {
+                InfoDialog(type = stringResource(R.string.password_details), onDismiss = { showDialog2 = false })
+            }
+
+            if (errorMessage != null) {
+                Text(
+                    text = errorMessage!!,
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.bodyLarge
+                )
             }
         }
 
@@ -181,7 +278,7 @@ fun LoginPage(
 }
 
 @Composable
-fun InfoDialog(onDismiss: () -> Unit) {
+fun InfoDialog(type: String, onDismiss: () -> Unit) {
     Dialog(
         onDismissRequest = onDismiss,
         properties = DialogProperties(
@@ -189,24 +286,28 @@ fun InfoDialog(onDismiss: () -> Unit) {
             dismissOnClickOutside = true
         ),
     ) {
-        Column(
-            modifier = Modifier.fillMaxWidth()
-                .background(MaterialTheme.colorScheme.background)
+        Surface(
+            shape = MaterialTheme.shapes.medium,
+            color = MaterialTheme.colorScheme.background,
+            modifier = Modifier
+                .fillMaxWidth()
         ) {
-            Text(
-                text = stringResource(R.string.password_details),
-                style = MaterialTheme.typography.bodyLarge)
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = type,
+                    style = MaterialTheme.typography.bodyLarge,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier
+                        .wrapContentWidth()
+                        .padding(24.dp),
+                )
 
+            }
         }
     }
 
-}
-@Preview(showBackground = true)
-@Composable
-fun LoginPagePreview() {
-    AppTheme {
-        LoginPage(onLoginClicked = { username, password ->
-            // Handle login logic
-        })
-    }
 }

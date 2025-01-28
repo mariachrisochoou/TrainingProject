@@ -1,4 +1,4 @@
-package com.magazinestore.app
+package com.magazinestore.app.data
 
 object Routes {
     var magazine = "Magazine"
