@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">App</string>
+
+    <!-- Login -->
+    <string name="sign_in">Sign In</string>
+    <string name="username">UserID</string>
+    <string name="password">Password</string>
+    <string name="error_credentials">Wrong Credentials</string>
+    <string name="error_credentials_details">You have entered incorrect credentials.</string>
+    <string name="password_details">At least 8 characters (2 upperscale, 3 lowercase, 1 special character, 2 numbers)</string>
+    <string name="password_details2">It must start with 2 capital letters and then 4 numbers</string>
+    <string name="back">Back</string>
+
+
+</resources>
