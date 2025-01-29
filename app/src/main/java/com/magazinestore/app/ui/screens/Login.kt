@@ -2,7 +2,6 @@ package com.magazinestore.app.ui.screens
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -13,20 +12,19 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuDefaults.outlinedTextFieldColors
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -82,7 +80,6 @@ fun LoginPage(
     val usernameError by loginViewModel.usernameError.observeAsState()
     val passwordError by loginViewModel.passwordError.observeAsState()
 
-    println(token)
 
     LaunchedEffect(token) {
         if (token != null) {
@@ -163,8 +160,16 @@ fun LoginPage(
                 singleLine = true,
                 colors = outlinedTextFieldColors(
                     errorLeadingIconColor = MaterialTheme.colorScheme.error,
-                    focusedBorderColor = if (usernameError != null) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary,
-                    unfocusedBorderColor = if (usernameError != null) MaterialTheme.colorScheme.error  else Color.Gray
+                    focusedBorderColor =
+                    if (usernameError != null)
+                        MaterialTheme.colorScheme.error
+                    else
+                        MaterialTheme.colorScheme.primary,
+                    unfocusedBorderColor =
+                    if (usernameError != null)
+                        MaterialTheme.colorScheme.error
+                    else
+                        Color.Gray
                 )
 
             )
@@ -208,7 +213,7 @@ fun LoginPage(
                             text = text,
                             modifier = Modifier
                                 .clickable { showPassword = !showPassword }
-                                .padding(4.dp),
+                                .padding(6.dp),
                             style = MaterialTheme.typography.bodyMedium.copy(
                                 color = MaterialTheme.colorScheme.primary,
                                 textDecoration = TextDecoration.Underline
@@ -216,7 +221,7 @@ fun LoginPage(
                         )
                         if (passwordError != null) {
                             Text(
-                                text = "!",
+                                text = stringResource(R.string.exclamation_point),
                                 modifier = Modifier
                                     .padding(4.dp),
                                 style = MaterialTheme.typography.bodyMedium.copy(
@@ -243,7 +248,7 @@ fun LoginPage(
                 )
             )
 
-            Spacer(modifier = Modifier.height(60.dp))
+            Spacer(modifier = Modifier.height(130.dp))
 
 
             Button(
@@ -251,7 +256,7 @@ fun LoginPage(
                     isLoading = true
                     loginViewModel.login(username, password)
                 },
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.width(200.dp),
                 border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary),
                 shape = RoundedCornerShape(50),
                 colors = ButtonDefaults.buttonColors(
@@ -337,7 +342,7 @@ fun InfoDialog(type: String, onDismiss: () -> Unit) {
                             .padding(start = 10.dp, end = 10.dp)
                     )
 
-                    Divider(
+                    HorizontalDivider(
                         modifier = Modifier.fillMaxWidth(),
                         color = MaterialTheme.colorScheme.primary,
                         thickness = 1.dp

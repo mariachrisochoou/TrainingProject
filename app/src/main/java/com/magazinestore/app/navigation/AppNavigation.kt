@@ -6,6 +6,7 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.magazinestore.app.data.Routes
 import com.magazinestore.app.ui.screens.LoginPage
 import com.magazinestore.app.ui.screens.MagazinePage
 import com.magazinestore.app.viewmodel.LoginViewModel
@@ -15,20 +16,20 @@ fun AppNavigation(
     navController: NavHostController,
     loginViewModel: LoginViewModel
 ) {
-    NavHost(navController = navController, startDestination = "login") {
-        composable("login") {
+    NavHost(navController = navController, startDestination = Routes.login) {
+        composable(Routes.login) {
             LoginPage(
                 loginViewModel = loginViewModel,
                 onLoginSuccess = { token ->
-                    navController.navigate("magazine/$token") {
-                        popUpTo("login") { inclusive = true }
+                    navController.navigate(Routes.magazine +"/$token") {
+                        popUpTo(Routes.login) { inclusive = true }
                     }
                 }
             )
         }
 
         composable(
-            "magazine/{token}",
+            Routes.magazine + "/{token}",
             arguments = listOf(navArgument("token") { type = NavType.StringType })
         ) { backStackEntry ->
             val token = backStackEntry.arguments?.getString("token")

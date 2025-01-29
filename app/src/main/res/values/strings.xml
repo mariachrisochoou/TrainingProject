@@ -10,6 +10,7 @@
     <string name="password_details">At least 8 characters (2 upperscale, 3 lowercase, 1 special character, 2 numbers)</string>
     <string name="password_details2">It must start with 2 capital letters and then 4 numbers</string>
     <string name="back">Back</string>
+    <string name="exclamation_point">!</string>
 
     <!--  Magazines  -->
     <string name="mag_title">Magazines</string>

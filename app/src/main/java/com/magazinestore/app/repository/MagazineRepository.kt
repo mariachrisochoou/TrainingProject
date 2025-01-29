@@ -3,9 +3,10 @@ package com.magazinestore.app.repository
 import android.util.Log
 import com.magazinestore.app.network.Magazine
 import com.magazinestore.app.network.NetworkApiService
+import java.text.ParseException
 import java.text.SimpleDateFormat
-import java.util.*
-import retrofit2.Response
+import java.util.Date
+import java.util.Locale
 
 class MagazineRepository(private val apiService: NetworkApiService) {
 
@@ -16,7 +17,6 @@ class MagazineRepository(private val apiService: NetworkApiService) {
 
             if (response.isSuccessful) {
                 val magazines = response.body() ?: emptyList()
-//                return magazines
                 return magazines.map { magazine ->
                     Magazine(
                         id = magazine.id,
@@ -41,25 +41,15 @@ class MagazineRepository(private val apiService: NetworkApiService) {
     fun parseDate(dateString: String?): Date? {
         if (dateString.isNullOrEmpty()) return null
 
-        val dateFormats = listOf(
-            SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.getDefault()),
-            SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()),
-            SimpleDateFormat("MM/dd/yyyy", Locale.getDefault())
-        )
+        val dateFormat = SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy", Locale.ENGLISH)
 
-        for (format in dateFormats) {
-            try {
-                return format.parse(dateString)
-            } catch (e: Exception) {
-
-                e.printStackTrace()
-            }
+        return try {
+            dateFormat.parse(dateString)
+        } catch (e: ParseException) {
+            Log.e("MagazineViewModel", "ERROR parsing date: $dateString", e)
+            null
         }
-
-        return null
     }
-
-
 }
 
 

@@ -5,36 +5,21 @@ import android.content.Context
 import android.net.Uri
 import android.os.Environment
 import android.util.Log
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.magazinestore.app.network.Magazine
 import com.magazinestore.app.repository.MagazineRepository
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.launch
-import retrofit2.Response
 import java.text.SimpleDateFormat
 import java.util.Locale
 
 
 class MagazineViewModel(private val magazineRepository: MagazineRepository) : ViewModel() {
 
-    private val _magazines = MutableLiveData<List<Magazine>>()
-    val magazines: LiveData<List<Magazine>> get() = _magazines
+//    private val _magazines = MutableLiveData<List<Magazine>>()
+//    val magazines: LiveData<List<Magazine>> get() = _magazines
 
-//    fun getMagazines(token: String) {
-//        viewModelScope.launch {
-//            val magazinesList = magazineRepository.getMagazines(token)
-//
-//            _magazines.value = magazinesList
-//            Log.d("MagazineViewModel", "Updated magazines: ${magazines.value}")
-//
-//        }
-//    }
+
     suspend fun getMagazines(token: String): List<Magazine> {
         return try {
             magazineRepository.getMagazines(token)
@@ -44,24 +29,28 @@ class MagazineViewModel(private val magazineRepository: MagazineRepository) : Vi
         }
     }
 
-
     fun groupMagazinesByMonthYear(magazines: List<Magazine>): Map<String, List<Magazine>> {
-        val formatter = SimpleDateFormat("MMMM yyyy", Locale.getDefault())
+        val formatter = SimpleDateFormat("MMMM yyyy", Locale.ENGLISH)
 
-        // Filter and log invalid magazines
-        val validMagazines = magazines.map {
-            if (it.date_released == null) {
-                Log.e("MagazineViewModel", "Magazine with null date: ${it.title}")
-                // Handle null dates by using a default date
-                it.copy(date_released = SimpleDateFormat("yyyy-MM-dd").parse("1900-01-01"))
-            } else {
-                it
+        return magazines
+            .filter {
+                if (it.date_released == null) {
+                    Log.e("MagazineViewModel", "ERROR: Magazine ${it.title} has a NULL date!")
+                    false
+                } else {
+                    Log.d("MagazineViewModel", "Processing date: ${it.date_released}")
+                    true
+                }
             }
-        }
-
-        // Group by formatted date
-        return validMagazines.groupBy { formatter.format(it.date_released) }
+            .sortedByDescending { it.date_released }
+            .groupBy {
+                val monthYear = formatter.format(it.date_released!!)
+                val englishMonth = SimpleDateFormat("MMM", Locale.ENGLISH).format(it.date_released)
+                "$englishMonth ${it.date_released.year + 1900}"
+            }
     }
+
+
 
 
 
