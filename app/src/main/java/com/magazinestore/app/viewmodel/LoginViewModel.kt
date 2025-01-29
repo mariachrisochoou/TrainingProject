@@ -1,12 +1,16 @@
 package com.magazinestore.app.viewmodel
 
+import android.content.Context
+import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.magazinestore.app.MyApplication
 import com.magazinestore.app.repository.UserRepository
 import kotlinx.coroutines.launch
+import retrofit2.Response
 
 class LoginViewModel(private val repository: UserRepository) : ViewModel() {
 
@@ -47,6 +51,8 @@ class LoginViewModel(private val repository: UserRepository) : ViewModel() {
 
                 } else {
                     _errorMessage.postValue("Login failed")
+                    _usernameError.value = "Something is wrong"
+                    _passwordError.value = "Something is wrong"
                 }
             } catch (e: Exception) {
                 _errorMessage.postValue("An error occurred: ${e.message}")
@@ -54,3 +60,5 @@ class LoginViewModel(private val repository: UserRepository) : ViewModel() {
         }
     }
 }
+
+

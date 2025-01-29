@@ -1,6 +1,7 @@
 package com.magazinestore.app.ui.screens
 
 import android.annotation.SuppressLint
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -23,6 +24,7 @@ import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuDefaults.outlinedTextFieldColors
 import androidx.compose.material3.Icon
@@ -52,6 +54,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.magazinestore.app.R
@@ -144,7 +147,18 @@ fun LoginPage(
                 value = username,
                 onValueChange = { username = it },
                 isError = usernameError != null,
-                trailingIcon = {Icon(Icons.Filled.Warning, contentDescription = "Warning", tint = MaterialTheme.colorScheme.background)},
+                trailingIcon = {
+                    if (usernameError != null) {
+                        Text(
+                            text = "!",
+                            modifier = Modifier
+                                .padding(4.dp),
+                            style = MaterialTheme.typography.bodyMedium.copy(
+                                color = MaterialTheme.colorScheme.error,
+                            )
+                        )
+                    }
+                },
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
                 colors = outlinedTextFieldColors(
@@ -201,10 +215,13 @@ fun LoginPage(
                             )
                         )
                         if (passwordError != null) {
-                            Icon(
-                                Icons.Filled.MoreVert,
-                                contentDescription = "Error",
-                                tint = MaterialTheme.colorScheme.error
+                            Text(
+                                text = "!",
+                                modifier = Modifier
+                                    .padding(4.dp),
+                                style = MaterialTheme.typography.bodyMedium.copy(
+                                    color = MaterialTheme.colorScheme.error,
+                                )
                             )
                         }
 
@@ -226,7 +243,7 @@ fun LoginPage(
                 )
             )
 
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(60.dp))
 
 
             Button(
@@ -234,8 +251,9 @@ fun LoginPage(
                     isLoading = true
                     loginViewModel.login(username, password)
                 },
-                modifier = Modifier.fillMaxWidth().border(2.dp, MaterialTheme.colorScheme.primary),
-                shape = RoundedCornerShape(16.dp),
+                modifier = Modifier.fillMaxWidth(),
+                border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary),
+                shape = RoundedCornerShape(50),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.background,
                     contentColor = MaterialTheme.colorScheme.primary
@@ -257,19 +275,21 @@ fun LoginPage(
             }
 
             if (showDialog1) {
-                InfoDialog(type = stringResource(R.string.password_details2), onDismiss = { showDialog1 = false })
+                InfoDialog(
+                    type = stringResource(R.string.password_details2),
+                    onDismiss = { showDialog1 = false })
             }
 
             if (showDialog2) {
-                InfoDialog(type = stringResource(R.string.password_details), onDismiss = { showDialog2 = false })
+                InfoDialog(
+                    type = stringResource(R.string.password_details),
+                    onDismiss = { showDialog2 = false })
             }
 
-            if (errorMessage != null) {
-                Text(
-                    text = errorMessage!!,
-                    color = MaterialTheme.colorScheme.error,
-                    style = MaterialTheme.typography.bodyLarge
-                )
+            if (errorDialog) {
+                InfoDialog(
+                    type = stringResource(R.string.error_credentials_details),
+                    onDismiss = { errorDialog = false })
             }
         }
 
@@ -297,15 +317,56 @@ fun InfoDialog(type: String, onDismiss: () -> Unit) {
                 verticalArrangement = Arrangement.spacedBy(8.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(
-                    text = type,
-                    style = MaterialTheme.typography.bodyLarge,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier
-                        .wrapContentWidth()
-                        .padding(24.dp),
-                )
+                if (type == stringResource(R.string.error_credentials_details)) {
+                    Text(
+                        text = stringResource(R.string.error_credentials),
+                        style = MaterialTheme.typography.labelLarge,
+                        textAlign = TextAlign.Center,
+                        fontSize = 22.sp,
+                        modifier = Modifier
+                            .wrapContentWidth()
+                            .padding(top = 24.dp),
+                    )
 
+                    Text(
+                        text = type,
+                        style = MaterialTheme.typography.bodyLarge,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier
+                            .wrapContentWidth()
+                            .padding(start = 10.dp, end = 10.dp)
+                    )
+
+                    Divider(
+                        modifier = Modifier.fillMaxWidth(),
+                        color = MaterialTheme.colorScheme.primary,
+                        thickness = 1.dp
+                    )
+                    Button(
+                        onClick = { onDismiss()},
+                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary),
+                        shape = RoundedCornerShape(50),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor =  MaterialTheme.colorScheme.background,
+                            contentColor = MaterialTheme.colorScheme.primary
+                        ),
+                    ) {
+                        Text(
+                            text = stringResource(R.string.back),
+
+                        )
+                    }
+
+                } else {
+                    Text(
+                        text = type,
+                        style = MaterialTheme.typography.bodyLarge,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier
+                            .wrapContentWidth()
+                            .padding(24.dp),
+                    )
+                }
             }
         }
     }

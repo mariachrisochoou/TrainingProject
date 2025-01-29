@@ -1,9 +1,8 @@
-package com.magazinestore.app
+package com.magazinestore.app.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.magazinestore.app.repository.UserRepository
-import com.magazinestore.app.viewmodel.LoginViewModel
 
 class LoginViewModelFactory(private val repository: UserRepository) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {

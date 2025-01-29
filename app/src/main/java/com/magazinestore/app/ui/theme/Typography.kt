@@ -24,6 +24,7 @@ val bodyFontFamily = FontFamily(
 
 val baseline = Typography()
 val appTypography = Typography(
+    titleLarge = baseline.titleLarge.copy(fontFamily = bodyFontFamily),
     bodyLarge = baseline.bodyLarge.copy(fontFamily = bodyFontFamily),
     bodyMedium = baseline.bodyMedium.copy(fontFamily = bodyFontFamily),
     bodySmall = baseline.bodySmall.copy(fontFamily = bodyFontFamily),

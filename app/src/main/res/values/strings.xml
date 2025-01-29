@@ -11,5 +11,14 @@
     <string name="password_details2">It must start with 2 capital letters and then 4 numbers</string>
     <string name="back">Back</string>
 
+    <!--  Magazines  -->
+    <string name="mag_title">Magazines</string>
+
+    <!--  Bottom Navigation Items  -->
+    <string name="magazine">Magazine</string>
+    <string name="scan">Scan</string>
+    <string name="profile">Profile</string>
+    <string name="settings">Settings</string>
+
 
 </resources>

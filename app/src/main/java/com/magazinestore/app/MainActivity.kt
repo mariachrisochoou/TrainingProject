@@ -13,6 +13,7 @@ import com.magazinestore.app.network.NetworkApiService
 import com.magazinestore.app.repository.UserRepository
 import com.magazinestore.app.ui.theme.AppTheme
 import com.magazinestore.app.viewmodel.LoginViewModel
+import com.magazinestore.app.viewmodel.LoginViewModelFactory
 
 class MainActivity : ComponentActivity() {
     private lateinit var viewModel: LoginViewModel
