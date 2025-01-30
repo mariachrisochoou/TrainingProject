@@ -6,13 +6,6 @@ The purpose of the app is to allow users to log in using a curated API, then ret
 
 The app is designed to follow modern Android development best practices using the ViewModel architecture for managing UI-related data lifecycle-consciously and Retrofit for API calls.
 
-## Features
-- User authentication via a secure API using OAuth2 tokens.
-- Fetches and displays a list of magazines grouped by month and year.
-- Allows users to download a magazine by clicking on its image.
-- Utilizes ViewModel, ViewModelFactory, and Repository patterns for clean and scalable code.
-- UI is built using Jetpack Compose, offering a modern, declarative way to build Android UIs.
-
 ## App Screenshots
 <p>
 <img src="/assets/login.jpg" alt="Login" style="height: 450px; width:200px;"/>
