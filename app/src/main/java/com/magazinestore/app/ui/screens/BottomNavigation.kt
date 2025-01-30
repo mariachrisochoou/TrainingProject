@@ -42,9 +42,7 @@ fun BottomNavBar() {
         items.forEach { item ->
             NavigationBarItem(
                 selected = false,
-                onClick = {
-                    TODO()
-                },
+                onClick = {},
                 icon = {
                     if (item.route == "Action") {
                             FloatingActionButton(
