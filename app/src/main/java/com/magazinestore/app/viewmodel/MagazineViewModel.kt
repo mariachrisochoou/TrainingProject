@@ -2,14 +2,17 @@ package com.magazinestore.app.viewmodel
 
 import android.app.DownloadManager
 import android.content.Context
+import android.content.Intent
 import android.net.Uri
 import android.os.Environment
 import android.util.Log
+import androidx.core.content.FileProvider
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.magazinestore.app.network.Magazine
 import com.magazinestore.app.repository.MagazineRepository
+import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -52,7 +55,15 @@ class MagazineViewModel(private val magazineRepository: MagazineRepository) : Vi
 
 
 
-
+    fun openPdf(context: Context, pdfUrl: String) {
+        val file = File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), pdfUrl)
+        val uri = FileProvider.getUriForFile(context, "com.magazinestore.app.fileprovider", file)
+        val intent = Intent(Intent.ACTION_VIEW).apply {
+            setDataAndType(uri, "application/pdf")
+            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        }
+        context.startActivity(intent)
+    }
 
     fun downloadMagazine(context: Context, magazine: Magazine) {
         val request = DownloadManager.Request(Uri.parse(magazine.pdf_url))

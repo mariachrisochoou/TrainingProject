@@ -1,12 +1,9 @@
 package com.magazinestore.app.ui.screens
 
 import android.annotation.SuppressLint
-import android.content.Context
-import android.content.Intent
 import android.os.Environment
 import android.util.Log
 import android.widget.Toast
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -25,7 +22,6 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
@@ -47,14 +43,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.core.content.FileProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.rememberAsyncImagePainter
 import com.magazinestore.app.R
@@ -67,7 +61,7 @@ import com.magazinestore.app.viewmodel.MagazineViewModelFactory
 import java.io.File
 
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 fun MagazinePage(token: String?) {
@@ -135,7 +129,7 @@ fun MagazinePage(token: String?) {
                 LazyColumn {
 
                     groupedMagazines.forEach { (monthYear, magazinesInSection) ->
-                        Log.d("Grouped", "$monthYear")
+                        Log.d("Grouped", monthYear)
                         item {
                             Text(
                                 text = monthYear,
@@ -168,15 +162,7 @@ fun MagazinePage(token: String?) {
 
 
 
-fun openPdf(context: Context, pdfUrl: String) {
-    val file = File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), pdfUrl)
-    val uri = FileProvider.getUriForFile(context, "com.magazinestore.app.fileprovider", file)
-    val intent = Intent(Intent.ACTION_VIEW).apply {
-        setDataAndType(uri, "application/pdf")
-        addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-    }
-    context.startActivity(intent)
-}
+
 
 @Composable
 fun MagazineItem(magazine: Magazine, magazineViewModel: MagazineViewModel) {
@@ -193,7 +179,7 @@ fun MagazineItem(magazine: Magazine, magazineViewModel: MagazineViewModel) {
                     "${magazine.title}.pdf"
                 )
                 if (file.exists()) {
-                    openPdf(context, file.toString())
+                    magazineViewModel.openPdf(context, file.toString())
                 } else {
                     Toast.makeText(context, "File not downloaded", Toast.LENGTH_SHORT).show()
                 }
@@ -224,15 +210,6 @@ fun MagazineItem(magazine: Magazine, magazineViewModel: MagazineViewModel) {
 
                         },
                     contentScale = ContentScale.Crop
-                )
-
-                Text(
-                    text = "250x250",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurface,
-                    modifier = Modifier
-                        .align(Alignment.Center)
-                        .padding(4.dp)
                 )
 
                 if (isDownloaded) {
@@ -272,7 +249,7 @@ fun MagazineItem(magazine: Magazine, magazineViewModel: MagazineViewModel) {
             Text(
                 text = magazine.title,
                 style = MaterialTheme.typography.bodySmall,
-                textAlign = TextAlign.Center,
+                textAlign = TextAlign.Start,
                 modifier = Modifier
                     .wrapContentWidth()
             )
