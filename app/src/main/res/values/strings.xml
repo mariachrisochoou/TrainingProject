@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">App</string>
+    <string name="app_name">Magazine App</string>
 
     <!-- Login -->
     <string name="sign_in">Sign In</string>
